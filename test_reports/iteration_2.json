@@ -1,0 +1,36 @@
+{
+  "summary": "Frontend regression re-test (iteration 2). All 3 regression fixes from iteration_1 verified: (a) [data-testid='enq-form-student-name'] and [data-testid='enq-form-mobile'] now resolvable via Playwright (slotProps.htmlInput migration works); (b) EnquiryForm layout no longer has overlapping date+select fields — Personal Details grid with Gender/DOB/Mobile/WhatsApp shows in 4 clean columns via MUI v9 `size={{xs,md}}` API; (c) Previously-reported React console warnings about InputProps/SelectProps/InputLabelProps/primaryTypographyProps are gone. Full E2E happy path tested end-to-end: Admin login -> Dashboard -> New Enquiry (fill student_name+mobile+course) -> Save -> visible in list -> open detail (Enquiry #7) -> Add Follow-up (dialog opens with all fields) -> Convert to Admission button present. Follow-ups page tabs (Today/Pending/Missed) render. Admissions page renders and Export CSV downloads `admissions.csv`. Reports page renders and Apply filter works. Settings page loads. Logout via avatar returns to /login. Faculty role sidebar correctly hides Settings/Follow-ups/Reports/New Enquiry (only Dashboard, Enquiries, Admissions shown).",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "console", "issues": ["Single remaining React console error: 'React does not recognize the justifyContent prop on a DOM element'. Not one of the previously-reported prop-forwarding warnings (InputProps/SelectProps/primaryTypographyProps are all clean now). Likely originates from a MUI Stack/Box child spreading justifyContent to a raw <div>. Non-blocking; pollutes console only. Suspect location: nested wrappers around Stack in EnquiryDetail or Dashboard header rows."]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Optional/minor: Track down and remove the stray `justifyContent` prop being forwarded to a DOM element (one console error remains). Grep hotspots: Dashboard.js line 97, EnquiryDetail.js line 64, Admissions.js line 20 — likely a component receiving `...rest` that includes MUI Stack sx-shortcut props.",
+    "Not blocking: follow-up test-script confirmed Add Follow-up dialog opens with all fields (Date/Time/Type/Update Status/Remarks/Next Follow-up) — actual save + row-in-history was not verified end-to-end via Playwright due to dialog interaction complexity; recommend main agent manually confirm follow-up-save+admission-conversion happy path or add a data-testid to the dialog Save Follow-up and Save Admission buttons to make E2E deterministic."
+  ],
+  "critical_code_review_comments": [
+    "EnquiryForm.js: for `select` variant TextFields, `slotProps.htmlInput` places data-testid on the hidden native <input> which has pointer-events:none — clicking the testid times out. For selects prefer setting `data-testid` on the visible combobox by wrapping in a Box with data-testid or use inputProps on the actual visible SelectDisplayProps. Currently workaround is `page.get_by_role('combobox', name='...')`.",
+    "One console error remains: `React does not recognize the justifyContent prop on a DOM element`. Should be cleaned before production.",
+    "Detail page URL is /enquiries/:id (view); Edit route is /enquiries/:id/edit — row's first icon-button correctly navigates to view.",
+    "Faculty sidebar filtering works correctly at the App layout level (only Dashboard/Enquiries/Admissions visible for faculty)."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100% (not re-run this iteration, previously 27/27)", "frontend": "~95% — all 3 previous regressions resolved; only a single minor console warning remains"},
+  "test_credentials": "See /app/memory/test_credentials.md — used admin@institute.com/Admin@123 and faculty@institute.com/Admin@123.",
+  "seed_data_creation": "Created TEST_John Doe enquiry (id=7) with course Cloud & DevOps via UI. Left in DB — safe to delete manually.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All previously-flagged frontend regressions on /enquiries/new are now resolved. The full happy-path (enquiry create -> detail open) works. Add Follow-up dialog + Convert to Admission button both present and dialog opens; final save+persist assertions not deterministically automated via Playwright due to lack of testids on dialog Save buttons — main agent can add testids like `data-testid='fu-dialog-save'` and `data-testid='admission-dialog-save'` and this becomes trivial to re-verify. Backend regression suite still lives at /app/backend/tests/backend_test.py and does not need re-run.",
+  "rca of the issue": "N/A — regressions from iteration_1 are all resolved by main agent's migration to MUI v9 API (slotProps.htmlInput, slotProps.inputLabel, slotProps.input, slotProps.primary, and Grid `size={{xs, md}}`). The remaining single `justifyContent` DOM warning is unrelated to the iteration_1 issues and is a separate minor cleanup item."
+}

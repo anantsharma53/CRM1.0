@@ -1,0 +1,58 @@
+{
+  "summary": "First testing pass on Institute Enquiry CRM. Backend: 27/27 pytest tests pass covering auth (5 roles + change-password + forgot-password with restore), Courses/Batches/Lead-Sources CRUD, Users role restrictions (admin cannot delete, super_admin can), Enquiries CRUD + duplicate detection + pagination + search + role guards (faculty forbidden), Follow-ups (status/next-followup propagation), Admissions (auto admission_no, no double-admit, status flip), Dashboard stats + charts + counsellor scoping, Reports summary. Frontend: Login (prefilled admin), dashboard stat cards + all 5 charts, sidebar navigation to Enquiries/Follow-ups/Admissions/Reports/Settings, list rows rendering, logout via avatar menu, and reception role restrictions all verified. Two frontend defects found: (1) some form fields' data-testids not resolvable via Playwright even though set via MUI inputProps; (2) DOB and Enquiry Date/Next Follow-up date fields visibly overlap other adjacent Select fields on /enquiries/new.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/enquiries/check-mobile", "issue": "Uses is_deleted==False filter which is fine, but consider returning also for soft-deleted duplicates for admin awareness"},
+      {"endpoint": "/api/auth/forgot-password", "issue": "No token/OTP flow – any anonymous caller who knows an email can reset a password. Acceptable per user's Core-first scope, but should be flagged for production hardening."},
+      {"endpoint": "/api/dashboard/stats (counsellor)", "issue": "admissions total is global for non-counsellors; conversion_rate for counsellor uses global admissions/scoped total which skews rate. Consider scoping admissions when role==counsellor."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "EnquiryForm (/enquiries/new)", "issue": "DOB, Enquiry Date, Next Follow-up date inputs visibly overlap with adjacent Select (Gender / Lead Source / Assign Counsellor) fields — placeholder texts 'mm/dd/yyyy' and truncated Select labels render on top of each other, breaking usability.", "selector": "[data-testid='enq-form-student-name'] section (Personal + Lead & Counselling grids)", "priority": "HIGH"},
+      {"component": "EnquiryForm date fields", "issue": "Using browser's default HTML5 date picker (<input type=date>) instead of an MUI DatePicker — inconsistent UI and root cause of the overlap.", "selector": "input[type='date']", "priority": "MEDIUM"},
+      {"component": "EnquiryList / EnquiryForm", "issue": "React console warning stream: 'React does not recognize the `InputProps`/`SelectProps`/`primaryTypographyProps` prop on a DOM element'. Some `SelectProps`/`InputProps` are being spread onto raw DOM. Not fatal but pollutes console and hints at prop mis-forwarding.", "selector": "n/a", "priority": "MEDIUM"},
+      {"component": "EnquiryForm student name & mobile", "issue": "Playwright cannot resolve [data-testid='enq-form-student-name'] and [data-testid='enq-form-mobile'] on /enquiries/new despite being set via inputProps on TextField. Might be linked to inputProps not being forwarded (see prop-forwarding warnings above).", "selector": "[data-testid='enq-form-student-name']", "priority": "HIGH"}
+    ],
+    "integration_issues": [
+      {"flow": "Enquiries list search input", "issue": "[data-testid='enq-search-input'] intermittently not resolvable by Playwright even though input is visible; fallback via placeholder works. Same prop-forwarding suspicion.", "affected_selectors": ["[data-testid='enq-search-input']"]}
+    ],
+    "design_issues": [
+      {"screen": "/enquiries/new", "issues": ["Overlapping date + select fields (Gender vs DOB, Enquiry Date vs Next Follow-up), form layout breaks visually", "Native browser date picker used instead of MUI DatePicker"]}
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/backend_test.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Fix EnquiryForm date fields: replace native <input type='date'> with MUI DatePicker (or fix grid so labels don't collide with adjacent Select fields).",
+    "Investigate why data-testids on TextField.inputProps are not being propagated to the DOM in some pages (EnquiryForm student_name/mobile, occasionally EnquiryList search). Verify MUI version in package.json and prop naming.",
+    "Clean up React console warnings by removing misspread InputProps/SelectProps/primaryTypographyProps on DOM elements.",
+    "Optional: harden /api/auth/forgot-password with an OTP or email token flow before production.",
+    "Optional: scope Admission counts by counsellor for /api/dashboard/stats when role==counsellor."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 700+ lines — split into routers (auth.py, enquiries.py, admissions.py, dashboard.py, reports.py, settings/*.py) to improve maintainability.",
+    "seed_defaults() is idempotent for users (checks email exists) — good — but does not update password when hash format/algo changes; acceptable for MVP.",
+    "hash uses bcrypt (verified $2b$ output). JWT_SECRET moved to .env (strong 256-bit hex). Good.",
+    "Enquiry list endpoint does not exclude Mongo _id (SQLite here – not applicable).",
+    "Login endpoint accepts email case-insensitively (lower()) — good.",
+    "Dashboard stats mixes 'admissions_total' globally with counsellor-scoped 'total' → inaccurate conversion_rate for counsellor role.",
+    "No rate-limiting or brute-force lockout on /api/auth/login. Playbook recommends 5-attempt lockout — not implemented.",
+    "CORS_ORIGINS defaults to '*' with allow_credentials=True — this combination is not allowed by browsers; production should set explicit origins.",
+    "Frontend Login prefills admin credentials in state (email/password inputs) — fine for demo but should be removed for production."
+  ],
+  "updated_files": [
+    "/app/backend/tests/backend_test.py (new)",
+    "/app/test_reports/pytest/pytest_results.xml (new)"
+  ],
+  "success_rate": {"backend": "100% (27/27)", "frontend": "~80% (login, dashboard, navigation, role restrictions, list, logout OK; form data-testid + date overlap issues block full E2E enquiry-create/follow-up/admission via Playwright)"},
+  "test_credentials": "See /app/memory/test_credentials.md – all Admin@123. Verified working. Faculty and counsellor passwords changed then restored to Admin@123 during change-password / forgot-password tests.",
+  "seed_data_creation": "Backend tests create a TEST_ prefixed enquiry, then soft-delete it via cleanup. Also transiently create+delete a course, batch, lead source and TEST_c1 user (super_admin deletes) — none of these should persist beyond the run.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Backend fully validated via /app/backend/tests/backend_test.py — 27 tests passing in ~9s. Focus next iteration on frontend fixes: (a) EnquiryForm date fields overlap and Playwright cannot locate enq-form-student-name/mobile — priority HIGH; (b) React console 'does not recognize InputProps/SelectProps' warnings across list/detail pages; (c) verify Enquiry->Follow-up->Admission end-to-end flow in browser once form is fixed. To re-run backend regression: `cd /app/backend && python -m pytest tests/backend_test.py -v`. Frontend URL: https://lead-master-22.preview.emergentagent.com. Login always prefilled with admin.",
+  "rca of the issue": "Overlap of date fields on /enquiries/new: EnquiryForm.js uses <TextField type='date' InputLabelProps={{shrink:true}}> alongside MUI Select fields in the same Grid row. The native date picker widget renders with its own placeholder text ('mm/dd/yyyy') which visually collides with the Select's truncated display value (e.g. 'Gr..', 'L.x'). Root cause: mixed use of native HTML5 date input with MUI Select inside compact Grid columns; recommended fix is to switch to @mui/x-date-pickers DatePicker or widen the grid item to avoid overlap. Data-testid resolution issue: MUI's TextField requires `inputProps` (lowercase) to forward attributes to the underlying <input>. The React DOM warnings ('React does not recognize InputProps/SelectProps') indicate some capitalized props are being passed through to DOM — this suggests a prop-forwarding regression somewhere (possibly a wrapping component or a MUI version mismatch) that could also be preventing the lowercase `inputProps` testid from reaching certain inputs. Recommend inspecting rendered DOM (devtools) for these specific inputs to confirm whether data-testid actually appears in the HTML."
+}

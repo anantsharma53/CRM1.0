@@ -1,0 +1,226 @@
+{
+  "project_name": "Institute Enquiry Management CRM",
+  "theme_archetype": "Archetype 4: Swiss & High-Contrast (Modern Academic Twist)",
+  "primary_theme": "Light",
+  "design_philosophy": "Authority, clarity, and trust. Bypassing generic SaaS blues and purples in favor of a mature 'Ivy League Modern' palette. High contrast for readability during long data-entry sessions by counsellors. Surfaces are completely flat with crisp 1px borders instead of drop shadows to reduce visual clutter.",
+  "colors": {
+    "light": {
+      "primary": {
+        "main": "#132A13",
+        "light": "#31572C",
+        "dark": "#0A170A",
+        "contrastText": "#FFFFFF"
+      },
+      "secondary": {
+        "main": "#A6422F",
+        "light": "#D26B58",
+        "dark": "#7A2E20",
+        "contrastText": "#FFFFFF"
+      },
+      "background": {
+        "default": "#F4F5F7",
+        "paper": "#FFFFFF",
+        "sidebar": "#0B100E"
+      },
+      "text": {
+        "primary": "#121212",
+        "secondary": "#5C6B64",
+        "disabled": "#A0AAB2"
+      },
+      "border": {
+        "main": "#E2E8F0"
+      },
+      "success": { "main": "#4F772D" },
+      "warning": { "main": "#D97736" },
+      "error": { "main": "#9E2A2B" },
+      "info": { "main": "#4A6FA5" }
+    },
+    "dark": {
+      "primary": {
+        "main": "#85B289",
+        "light": "#A3C9A6",
+        "dark": "#5D8A61",
+        "contrastText": "#0B100E"
+      },
+      "secondary": {
+        "main": "#E27D60",
+        "light": "#F29D85",
+        "dark": "#BA5A3F",
+        "contrastText": "#0B100E"
+      },
+      "background": {
+        "default": "#0B100E",
+        "paper": "#141A17",
+        "sidebar": "#0B100E"
+      },
+      "text": {
+        "primary": "#F4F5F7",
+        "secondary": "#A0AAB2",
+        "disabled": "#5C6B64"
+      },
+      "border": {
+        "main": "#2A3630"
+      }
+    }
+  },
+  "typography": {
+    "font_families": {
+      "heading": "'Cabinet Grotesk', sans-serif",
+      "body": "'Outfit', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "scale": {
+      "h1": { "fontSize": "2.5rem", "fontWeight": 800, "letterSpacing": "-0.02em", "lineHeight": 1.1 },
+      "h2": { "fontSize": "2rem", "fontWeight": 700, "letterSpacing": "-0.01em", "lineHeight": 1.2 },
+      "h3": { "fontSize": "1.5rem", "fontWeight": 700, "letterSpacing": "-0.01em" },
+      "h4": { "fontSize": "1.25rem", "fontWeight": 600, "letterSpacing": "0em" },
+      "h5": { "fontSize": "1.125rem", "fontWeight": 600 },
+      "h6": { "fontSize": "1rem", "fontWeight": 600 },
+      "subtitle1": { "fontSize": "1rem", "fontWeight": 500 },
+      "body1": { "fontSize": "1rem", "fontWeight": 400, "lineHeight": 1.5 },
+      "body2": { "fontSize": "0.875rem", "fontWeight": 400, "lineHeight": 1.5 },
+      "button": { "fontSize": "0.875rem", "fontWeight": 600, "textTransform": "none", "letterSpacing": "0.02em" },
+      "overline": { "fontSize": "0.75rem", "fontWeight": 700, "textTransform": "uppercase", "letterSpacing": "0.1em" }
+    }
+  },
+  "mui_theme_overrides": {
+    "MuiButton": {
+      "styleOverrides": {
+        "root": {
+          "borderRadius": "4px",
+          "boxShadow": "none",
+          "padding": "10px 20px",
+          "textTransform": "none",
+          "fontWeight": 600,
+          "border": "1px solid transparent",
+          "&:hover": {
+            "boxShadow": "none"
+          }
+        },
+        "containedPrimary": {
+          "&:hover": {
+            "backgroundColor": "#0A170A"
+          }
+        },
+        "outlined": {
+          "borderColor": "#E2E8F0"
+        }
+      }
+    },
+    "MuiCard": {
+      "styleOverrides": {
+        "root": {
+          "borderRadius": "8px",
+          "boxShadow": "none",
+          "border": "1px solid #E2E8F0",
+          "backgroundImage": "none"
+        }
+      }
+    },
+    "MuiPaper": {
+      "styleOverrides": {
+        "root": {
+          "backgroundImage": "none",
+          "boxShadow": "none"
+        },
+        "elevation1": {
+          "boxShadow": "none",
+          "border": "1px solid #E2E8F0"
+        }
+      }
+    },
+    "MuiOutlinedInput": {
+      "styleOverrides": {
+        "root": {
+          "borderRadius": "6px",
+          "backgroundColor": "#FAFAFA",
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            "borderWidth": "2px"
+          }
+        },
+        "notchedOutline": {
+          "borderColor": "#E2E8F0"
+        }
+      }
+    },
+    "MuiTableCell": {
+      "styleOverrides": {
+        "root": {
+          "borderBottom": "1px solid #E2E8F0",
+          "padding": "16px",
+          "fontSize": "0.875rem"
+        },
+        "head": {
+          "fontWeight": 600,
+          "backgroundColor": "#F8F9FA",
+          "color": "#5C6B64",
+          "textTransform": "uppercase",
+          "fontSize": "0.75rem",
+          "letterSpacing": "0.05em"
+        }
+      }
+    },
+    "MuiDrawer": {
+      "styleOverrides": {
+        "paper": {
+          "backgroundColor": "#0B100E",
+          "color": "#F4F5F7",
+          "borderRight": "none"
+        }
+      }
+    }
+  },
+  "layout_strategies": {
+    "sidebar": "Dark mode sidebar fixed on the left (#0B100E). Use light muted text (#A0AAB2) for inactive links and pure white (#FFFFFF) with a left border accent (#A6422F) for active links. Include a distinct Institute Logo area at the top.",
+    "top_navbar": "White/Light surface (#FFFFFF) with a 1px bottom border (#E2E8F0). Keep it minimal. It should house the global search, notifications, and user profile avatar.",
+    "dashboard_grid": "Bento-style dense layout (gap: 24px). Top row: 4 Summary metric cards (Enquiries, Admissions, Conversion %, Active Counsellors). Middle row: 2 large charts (Monthly Trend & Lead Source). Bottom row: Data table (Recent Follow-ups).",
+    "forms": "Multi-section Enquiry Form using MUI Accordions or a Stepper. Form fields should be dense, with clear labels above the inputs (not floating inside). Group related fields logically: Personal, Academic, Course, Lead, Counselling.",
+    "tables": "Flat style, no shadow. Pagination must be clear at the bottom. Include inline action buttons (View, Edit, Convert) on the rightmost column."
+  },
+  "chartjs_palette": {
+    "description": "Chart colors tailored to the 'Ivy Modern' theme, avoiding default chart palettes.",
+    "colors": [
+      "#132A13", 
+      "#A6422F", 
+      "#729B79", 
+      "#D97736", 
+      "#4A6FA5", 
+      "#E2E8F0"
+    ],
+    "options": {
+      "responsive": true,
+      "maintainAspectRatio": false,
+      "plugins": {
+        "legend": {
+          "position": "bottom",
+          "labels": {
+            "usePointStyle": true,
+            "padding": 20,
+            "font": {
+              "family": "'Outfit', sans-serif"
+            }
+          }
+        }
+      },
+      "scales": {
+        "x": { "grid": { "display": false } },
+        "y": { "grid": { "color": "#E2E8F0", "borderDash": [4, 4] } }
+      }
+    }
+  },
+  "testing": {
+    "attributes_required": true,
+    "instructions": "All interactive and key informational elements MUST include a `data-testid` attribute. Convention: kebab-case, role-based. e.g., `data-testid='login-submit-button'`, `data-testid='sidebar-nav-dashboard'`, `data-testid='enquiry-form-firstname'`."
+  },
+  "media_assets": {
+    "login_background": {
+      "url": "https://images.unsplash.com/photo-1615406020658-6c4b805f1f30?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB1bml2ZXJzaXR5JTIwYXJjaGl0ZWN0dXJlJTIwYnVpbGRpbmd8ZW58MHx8fHwxNzgyODg5NTY5fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Modern university architecture",
+      "usage": "Use as a full-bleed background image on the left side of the Login screen, using an overlay (e.g., bg-black/40) to make overlaid branding/text pop."
+    }
+  },
+  "technical_notes": {
+    "file_extension": "Use `.js` files for all React components. Do not use `.tsx`.",
+    "styling_engine": "MUI System / Emotion. Use `sx` props for inline customizations and `styled` for custom components. Avoid generic global CSS classes where MUI handles it."
+  }
+}
