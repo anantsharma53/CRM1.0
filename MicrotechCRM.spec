@@ -53,6 +53,7 @@ exe = EXE(
     a.datas,
     [],
     name="MicrotechCRM",
+    icon='resources/icon.ico',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
